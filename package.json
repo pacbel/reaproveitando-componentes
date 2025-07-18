@@ -2,26 +2,40 @@
   "name": "reaproveitando-componentes",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.4.1"
+    "dev": "next dev -p 3002",
+    "dev:app1": "npm run dev --workspace=apps/app1",
+    "dev:app2": "npm run dev --workspace=apps/app2",
+    "build": "npm run build --workspaces --if-present",
+    "start": "next start -p 3002",
+    "start:app1": "npm run start --workspace=apps/app1",
+    "start:app2": "npm run start --workspace=apps/app2",
+    "lint": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "next": "15.4.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   }
 }

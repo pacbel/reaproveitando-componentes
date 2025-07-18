@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/packages/auth-service/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -15,6 +16,8 @@
 
 # next.js
 /.next/
+/apps/app1/.next/*
+/apps/app2/.next/*
 /out/
 
 # production
@@ -29,9 +32,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel

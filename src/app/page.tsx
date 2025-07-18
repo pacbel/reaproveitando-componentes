@@ -1,102 +1,278 @@
-import Image from "next/image";
+'use client';
+
+import Link from "next/link";
+import { Button } from "@monorepo/shared-ui";
+import { useAuth } from "./providers/AuthProvider";
+
+// Componente de card para features
+function FeatureCard({ title, description }: { title: string, description: string }) {
+  return (
+    <div style={{
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '2rem',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1rem'
+    }}>
+      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#1e3a8a' }}>{title}</h3>
+      <p style={{ color: '#4b5563', lineHeight: '1.6' }}>{description}</p>
+    </div>
+  );
+}
+
+// Componente de card para apps
+function AppCard({ 
+  title, 
+  description, 
+  path, 
+  external = false 
+}: { 
+  title: string, 
+  description: string, 
+  path: string,
+  external?: boolean 
+}) {
+  return (
+    <div style={{
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '2rem',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1rem'
+    }}>
+      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#1e3a8a' }}>{title}</h3>
+      <p style={{ color: '#4b5563', lineHeight: '1.6', flex: 1 }}>{description}</p>
+      
+      {external ? (
+        <a 
+          href={path} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none' }}
+        >
+          <Button variant="secondary">
+            Abrir em nova aba
+          </Button>
+        </a>
+      ) : (
+        <Link href={path} style={{ textDecoration: 'none' }}>
+          <Button variant="secondary">
+            Acessar
+          </Button>
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { user, logout } = useAuth();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)',
+      padding: '0',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+    }}>
+      {/* Cabeçalho */}
+      <header style={{
+        width: '100%',
+        backgroundColor: '#2563eb',
+        color: 'white',
+        padding: '1rem 2rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>Monorepo Next.js</div>
+        <nav style={{ display: 'flex', gap: '1rem' }}>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontSize: '0.9rem' }}>Olá, {user.name}</span>
+              <Button variant="secondary" onClick={logout}>
+                Sair
+              </Button>
+            </div>
+          ) : (
+            <Link href="/autenticacao" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary">
+                Entrar
+              </Button>
+            </Link>
+          )}
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section style={{
+        width: '100%',
+        maxWidth: '1200px',
+        padding: '4rem 2rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        gap: '2rem'
+      }}>
+        <h1 style={{
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          color: '#1e3a8a',
+          marginBottom: '1rem'
+        }}>
+          Monorepo com Next.js e Tailwind CSS
+        </h1>
+        
+        <p style={{
+          fontSize: '1.25rem',
+          color: '#4b5563',
+          maxWidth: '800px',
+          lineHeight: '1.7',
+          marginBottom: '2rem'
+        }}>
+          Exemplo de monorepo com múltiplos aplicativos Next.js compartilhando componentes, 
+          estilos e lógica de autenticação. Uma solução elegante para projetos escaláveis.
+        </p>
+        
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link href="/componentes" style={{ textDecoration: 'none' }}>
+            <Button variant="primary">
+              Ver Componentes Compartilhados
+            </Button>
+          </Link>
+          
+          <Link href="/autenticacao" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary">
+              Testar Autenticação
+            </Button>
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+
+      {/* Features Section */}
+      <section style={{
+        width: '100%',
+        backgroundColor: 'white',
+        padding: '4rem 2rem'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ 
+            fontSize: '2rem', 
+            fontWeight: 'bold', 
+            color: '#1e3a8a', 
+            marginBottom: '3rem',
+            textAlign: 'center'
+          }}>
+            Recursos do Monorepo
+          </h2>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '2rem'
+          }}>
+            <FeatureCard 
+              title="Componentes Compartilhados" 
+              description="Reutilize componentes UI em todos os aplicativos do monorepo, mantendo consistência visual e reduzindo duplicação de código."
+            />
+            
+            <FeatureCard 
+              title="Autenticação Unificada" 
+              description="Sistema de autenticação compartilhado entre todos os aplicativos, com hooks personalizados e formulários reutilizáveis."
+            />
+            
+            <FeatureCard 
+              title="Tailwind CSS v4" 
+              description="Estilização consistente usando Tailwind CSS versão 4 com configuração compartilhada entre todos os projetos."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Apps Section */}
+      <section style={{
+        width: '100%',
+        padding: '4rem 2rem',
+        background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ 
+            fontSize: '2rem', 
+            fontWeight: 'bold', 
+            color: '#1e3a8a', 
+            marginBottom: '3rem',
+            textAlign: 'center'
+          }}>
+            Aplicativos no Monorepo
+          </h2>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '2rem'
+          }}>
+            <AppCard 
+              title="Aplicativo Raiz" 
+              description="O aplicativo principal que você está visualizando agora."
+              path="/"
+            />
+            
+            <AppCard 
+              title="App 1" 
+              description="Primeiro aplicativo que utiliza os componentes compartilhados."
+              path="http://localhost:3000"
+              external
+            />
+            
+            <AppCard 
+              title="App 2" 
+              description="Segundo aplicativo que também utiliza os componentes compartilhados."
+              path="http://localhost:3001"
+              external
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{
+        width: '100%',
+        backgroundColor: '#1e3a8a',
+        color: 'white',
+        padding: '2rem',
+        marginTop: 'auto'
+      }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Monorepo Next.js</h3>
+            <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>Exemplo de arquitetura escalável para projetos Next.js</p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link href="/componentes" style={{ color: 'white', textDecoration: 'none', opacity: 0.8, fontSize: '0.9rem' }}>
+              Componentes
+            </Link>
+            <Link href="/autenticacao" style={{ color: 'white', textDecoration: 'none', opacity: 0.8, fontSize: '0.9rem' }}>
+              Autenticação
+            </Link>
+          </div>
+        </div>
       </footer>
     </div>
   );
