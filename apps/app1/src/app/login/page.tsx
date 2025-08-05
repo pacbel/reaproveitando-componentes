@@ -8,18 +8,17 @@ import { useState } from 'react';
 
 export default function AutenticacaoPage() {
   const router = useRouter();
-  const { login, user, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [mensagem, setMensagem] = useState('');
-  const [carregando, setCarregando] = useState(false);
 
-  const handleLoginSuccess = (user: any) => {
+  const handleLoginSuccess = (user: Record<string, unknown>) => {
     setMensagem('Login realizado com sucesso!');
     setTimeout(() => {
       router.push('/');
     }, 1500);
   };
 
-  const handleLoginError = (error: string) => {
+  const handleLoginError = () => {
     setMensagem('Erro ao fazer login. Tente com email: teste@exemplo.com e senha: 123456');
   };
 

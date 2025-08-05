@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth, User } from '@monorepo/shared-ui';
+import { useAuth } from '@monorepo/shared-ui';
 import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {

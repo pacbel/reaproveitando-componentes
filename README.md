@@ -15,9 +15,19 @@ reaproveitando-componentes/
 │   │   │   ├── hooks/        # Hooks personalizados
 │   │   │   └── index.ts      # Exportações públicas
 │   │   └── package.json
-│   └── auth-service/         # Serviço de autenticação
+│   ├── database/             # Pacote de acesso a dados (Prisma extraído)
+│   │   ├── src/
+│   │   │   ├── client.ts     # Cliente Prisma singleton
+│   │   │   ├── models.ts     # Tipos e interfaces
+│   │   │   ├── repositories/ # Repositórios para acesso a dados
+│   │   │   └── index.ts      # Exportações públicas
+│   │   ├── prisma/           # Esquema do banco de dados
+│   │   └── package.json
+│   ├── auth-service/         # Serviço de autenticação
+│   │   ├── src/
+│   │   └── package.json
+│   └── api/                  # API REST para autenticação
 │       ├── src/
-│       ├── prisma/           # Esquema do banco de dados
 │       └── package.json
 ├── apps/                     # Aplicações
 │   ├── app1/                 # Primeiro aplicativo
@@ -39,7 +49,11 @@ reaproveitando-componentes/
 
 1. **@monorepo/shared-ui**: Contém componentes de interface reutilizáveis como o `LoginForm` e hooks como o `useAuth`.
 
-2. **@monorepo/auth-service**: Implementa a lógica de autenticação e gerenciamento de usuários, incluindo o esquema Prisma para o banco de dados.
+2. **@monorepo/database**: Contém o cliente Prisma, modelos de dados e repositórios para acesso ao banco de dados. Este pacote foi extraído do auth-service para permitir o reaproveitamento da camada de dados por outros serviços.
+
+3. **@monorepo/auth-service**: Implementa a lógica de autenticação e gerenciamento de usuários, utilizando o pacote database para acesso aos dados.
+
+4. **@monorepo/api**: Implementa uma API REST que utiliza o auth-service para fornecer endpoints de autenticação.
 
 ### Aplicações
 
@@ -61,14 +75,30 @@ reaproveitando-componentes/
 
 ## Como Executar
 
-### Instalação
+### Instalação e Configuração
+
+```bash
+# Executar o script de configuração (cria o banco e instala dependências)
+./setup.ps1
+```
+
+Ou manualmente:
 
 ```bash
 # Instalar todas as dependências (execute apenas na raiz do projeto)
 npm install
+
+# Configurar o banco de dados
+npm run setup:db
 ```
 
 > **Importante**: Uma das vantagens do monorepo com workspaces é que você só precisa executar `npm install` uma única vez na pasta raiz do projeto. O npm automaticamente instalará as dependências de todos os pacotes e aplicativos definidos no workspace. Não é necessário entrar em cada pasta separadamente para instalar as dependências.
+
+### Executar a API
+
+```bash
+npm run dev:api
+```
 
 ### Executar o Aplicativo 1
 
@@ -84,20 +114,26 @@ npm run dev:app2
 
 ## Banco de Dados
 
-O projeto utiliza Prisma ORM com MySQL. O esquema do banco de dados é definido no pacote `auth-service` e compartilhado entre as aplicações.
+O projeto utiliza Prisma ORM com MySQL. O esquema do banco de dados agora é definido no pacote `database` e compartilhado entre as aplicações.
 
 Para configurar o banco de dados:
 
-1. Crie um arquivo `.env` na raiz do projeto com a URL de conexão:
+1. O arquivo `.env` já está configurado no pacote database com a URL de conexão:
 
 ```
-DATABASE_URL="mysql://usuario:senha@localhost:3306/nome_do_banco"
+DATABASE_URL="mysql://root:@localhost:3306/auth_db"
 ```
 
-2. Execute as migrações do Prisma:
+2. Execute o script de configuração para criar o banco e aplicar as migrações:
 
 ```bash
-npx prisma migrate dev --schema=./packages/auth-service/prisma/schema.prisma
+./setup.ps1
+```
+
+Ou execute manualmente:
+
+```bash
+npm run setup:db
 ```
 
 ## Considerações Finais

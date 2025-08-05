@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { UserRepository } from '@monorepo/database';
 import bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
+const userRepository = new UserRepository();
 
 export interface AuthConfig {
   jwtSecret: string;
@@ -30,9 +30,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await userRepository.findByEmail(email);
 
     if (!user || !await bcrypt.compare(password, user.password)) {
       throw new Error('Credenciais inválidas');
@@ -57,9 +55,7 @@ export class AuthService {
   }
 
   async register(email: string, password: string, name: string) {
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await userRepository.findByEmail(email);
 
     if (existingUser) {
       throw new Error('Usuário já existe');
@@ -68,12 +64,10 @@ export class AuthService {
     const saltRounds = this.config.bcryptRounds || 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
+    const user = await userRepository.create({
+      email,
+      name,
+      password: hashedPassword,
     });
 
     return {
@@ -89,9 +83,7 @@ export class AuthService {
       // @ts-ignore - Ignorando erros de tipagem do JWT
       const decoded = jwt.verify(token, this.config.jwtSecret) as JWTPayload;
       
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-      });
+      const user = await userRepository.findById(decoded.userId);
 
       if (!user) {
         throw new Error('Usuário não encontrado');

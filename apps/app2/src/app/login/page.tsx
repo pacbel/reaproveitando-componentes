@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleLoginSuccess = (user: any) => {
+  const handleLoginSuccess = () => {
     // Redirecionar para o dashboard após login bem-sucedido
     router.push('/dashboard');
   };
