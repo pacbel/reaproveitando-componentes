@@ -136,6 +136,131 @@ Ou execute manualmente:
 npm run setup:db
 ```
 
+## Passo a Passo para Distribuição das Aplicações
+
+A estrutura de monorepo com workspaces do npm permite gerenciar múltiplas aplicações e pacotes compartilhados de forma eficiente. Abaixo está o passo a passo detalhado de como funciona a distribuição de cada aplicação neste projeto:
+
+### 1. Configuração do Monorepo
+
+O arquivo `package.json` na raiz do projeto define os workspaces:
+
+```json
+{
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}
+```
+
+Isso permite que o npm reconheça todos os pacotes em `packages/` e `apps/` como parte do mesmo monorepo.
+
+### 2. Desenvolvimento de Pacotes Compartilhados
+
+1. **Pacote Database**
+   - Contém o cliente Prisma e os repositórios de acesso a dados
+   - Exporta suas funcionalidades através do arquivo `src/index.ts`
+   - Outros pacotes o utilizam como dependência normal: `"@monorepo/database": "1.0.0"`
+   - Gerencia suas próprias migrações com scripts como `migrate:dev`
+
+2. **Pacote Auth-Service**
+   - Depende do pacote database: `"@monorepo/database": "1.0.0"`
+   - Implementa a lógica de autenticação e gerenciamento de usuários
+   - Exporta suas funcionalidades através do arquivo `src/index.ts`
+
+3. **Pacote Shared-UI**
+   - Define componentes React reutilizáveis
+   - Usa `peerDependencies` para React e Next.js, evitando duplicação
+   - Exporta seus componentes através do arquivo `src/index.ts`
+
+4. **Pacote API**
+   - Depende dos pacotes auth-service e database
+   - Implementa endpoints REST para autenticação
+   - Possui seus próprios scripts para execução: `dev` e `start`
+
+### 3. Configuração das Aplicações
+
+1. **App1 e App2**
+   - Cada aplicação tem seu próprio `package.json` com dependências específicas
+   - Referenciam os pacotes compartilhados usando o caractere curinga: `"@monorepo/shared-ui": "*"`
+   - Possuem suas próprias configurações de porta para desenvolvimento:
+     - App1: porta 3000
+     - App2: porta 3001
+   - Cada aplicação pode ter seu próprio tema visual, mas reutiliza os mesmos componentes
+
+### 4. Instalação de Dependências
+
+Uma das principais vantagens do monorepo com workspaces é a instalação centralizada:
+
+```bash
+npm install
+```
+
+Este comando, executado na raiz do projeto:
+- Instala todas as dependências de todos os pacotes e aplicações
+- Cria links simbólicos entre os pacotes locais (em vez de baixá-los do npm)
+- Deduplica dependências comuns, economizando espaço em disco
+
+### 5. Execução das Aplicações
+
+O arquivo `package.json` raiz define scripts para executar cada aplicação:
+
+```bash
+# Executar API
+npm run dev:api
+
+# Executar App1
+npm run dev:app1
+
+# Executar App2
+npm run dev:app2
+```
+
+Cada script usa a flag `--workspace` para executar o comando no contexto do pacote específico.
+
+### 6. Construção para Produção
+
+Para construir todas as aplicações para produção simultaneamente:
+
+```bash
+npm run build
+```
+
+Este comando utiliza a flag `--workspaces --if-present` para executar o script `build` em todos os pacotes que o possuem.
+
+Para construir cada aplicação individualmente:
+
+```bash
+# Construir App1
+npm run build --workspace=apps/app1
+
+# Construir App2
+npm run build --workspace=apps/app2
+
+# Construir API (se tiver script de build)
+npm run build --workspace=packages/api
+```
+
+Você também pode adicionar estes comandos ao package.json raiz para facilitar:
+
+```json
+{
+  "scripts": {
+    "build:app1": "npm run build --workspace=apps/app1",
+    "build:app2": "npm run build --workspace=apps/app2",
+    "build:api": "npm run build --workspace=packages/api"
+  }
+}
+```
+
+### 7. Publicação e Implantação
+
+Para implantar as aplicações:
+
+1. Cada aplicação pode ser construída e implantada independentemente
+2. Os pacotes compartilhados são incluídos no build de cada aplicação
+3. Para implantações em ambientes como Vercel ou Netlify, configure cada aplicação separadamente apontando para o diretório específico dentro do monorepo
+
 ## Considerações Finais
 
 Esta estrutura de monorepo é ideal para equipes que trabalham em múltiplos projetos relacionados e desejam maximizar a reutilização de código. É o equivalente moderno às DLLs do desenvolvimento Windows, adaptado para o ecossistema JavaScript/React.
