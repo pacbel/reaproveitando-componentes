@@ -255,11 +255,192 @@ Você também pode adicionar estes comandos ao package.json raiz para facilitar:
 
 ### 7. Publicação e Implantação
 
-Para implantar as aplicações:
+#### Implantação Manual
+
+Após executar o build de uma aplicação Next.js, você precisa enviar para o servidor:
+
+1. **Arquivos necessários para produção:**
+   - Pasta `.next` (contém o código compilado)
+   - Arquivo `package.json` (para instalar dependências de produção)
+   - Arquivo `next.config.js` (configurações principais do Next.js)
+   - Pasta `public` (se existir, para arquivos estáticos)
+   
+2. **Arquivos de configuração adicionais que podem ser necessários:**
+   - `postcss.config.js` ou `postcss.config.mjs` (se usar PostCSS/Tailwind)
+   - `tailwind.config.js` (se usar Tailwind CSS)
+   - `.env` ou `.env.production` (para variáveis de ambiente, sem incluir segredos)
+
+2. **No servidor, execute:**
+   ```bash
+   npm install --production
+   npm start
+   ```
+
+#### Implantação em Plataformas de Hospedagem
+
+Para implantar as aplicações em plataformas como Vercel ou Netlify:
 
 1. Cada aplicação pode ser construída e implantada independentemente
 2. Os pacotes compartilhados são incluídos no build de cada aplicação
-3. Para implantações em ambientes como Vercel ou Netlify, configure cada aplicação separadamente apontando para o diretório específico dentro do monorepo
+3. Configure cada aplicação separadamente apontando para o diretório específico dentro do monorepo
+
+#### Exemplo para Vercel
+
+Para implantar no Vercel, crie um arquivo `vercel.json` na raiz de cada aplicação:
+
+```json
+{
+  "buildCommand": "cd ../.. && npm run build:app1",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && npm install"
+}
+```
+
+#### Exemplo para Docker
+
+Para containerizar uma aplicação Next.js do monorepo:
+
+```dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build:app1
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+# Arquivos principais
+COPY --from=builder /app/apps/app1/package.json .
+COPY --from=builder /app/apps/app1/.next ./.next
+COPY --from=builder /app/apps/app1/public ./public
+COPY --from=builder /app/apps/app1/next.config.js .
+
+# Arquivos de configuração adicionais
+COPY --from=builder /app/apps/app1/postcss.config.js ./postcss.config.js
+COPY --from=builder /app/apps/app1/tailwind.config.js ./tailwind.config.js
+COPY --from=builder /app/apps/app1/.env.production ./.env.production
+
+RUN npm install --production
+
+CMD ["npm", "start"]
+```
+
+> **Observação**: Copie apenas os arquivos de configuração que existem e são necessários para sua aplicação. O exemplo acima mostra todos os possíveis arquivos, mas você deve adaptá-lo às necessidades específicas do seu projeto.
+
+### 8. Configuração de Esteira CI/CD com EasyPanel
+
+Para configurar uma esteira de integração contínua e implantação contínua (CI/CD) para um monorepo no EasyPanel, siga estas orientações:
+
+#### Estrutura de Diretórios para Dockerfiles
+
+Cada aplicação deve ter seu próprio Dockerfile em seu diretório específico:
+
+```
+reaproveitando-componentes/
+├── apps/
+│   ├── app1/
+│   │   ├── Dockerfile
+│   │   └── .dockerignore
+│   └── app2/
+│       ├── Dockerfile
+│       └── .dockerignore
+├── packages/
+│   └── api/
+│       ├── Dockerfile
+│       └── .dockerignore
+└── docker-compose.yml (opcional, para desenvolvimento local)
+```
+
+#### Exemplo de Dockerfile para cada Aplicação
+
+**Para apps/app1/Dockerfile:**
+
+```dockerfile
+# Este Dockerfile deve estar dentro da pasta app1
+FROM node:18-alpine AS builder
+
+# Copiar todo o monorepo
+WORKDIR /app
+COPY ../../package*.json ./
+COPY ../../packages ./packages/
+COPY ../../apps/app1 ./apps/app1/
+
+# Instalar dependências e construir
+RUN npm install
+RUN npm run build:app1
+
+# Imagem de produção
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# Copiar arquivos necessários
+COPY --from=builder /app/apps/app1/package.json ./
+COPY --from=builder /app/apps/app1/.next ./.next
+COPY --from=builder /app/apps/app1/public ./public
+COPY --from=builder /app/apps/app1/next.config.js ./
+COPY --from=builder /app/apps/app1/postcss.config.js ./
+COPY --from=builder /app/apps/app1/tailwind.config.js ./
+
+RUN npm install --production
+
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+#### Configuração no EasyPanel
+
+1. **Crie um serviço para cada aplicação:**
+   - No EasyPanel, crie um novo serviço para cada aplicação (app1, app2, api)
+   - Configure cada serviço para apontar para o subdiretório específico no repositório Git
+
+2. **Configuração de Build para app1:**
+   - **Repositório Git**: URL do seu repositório monorepo
+   - **Branch**: main (ou sua branch principal)
+   - **Diretório do Dockerfile**: `apps/app1`
+   - **Contexto de Build**: `/` (raiz do repositório)
+   - **Arquivo Dockerfile**: `apps/app1/Dockerfile`
+
+3. **Configuração de Build para app2:**
+   - Mesma configuração, mas com diretório `apps/app2`
+
+4. **Configuração de Build para API:**
+   - Mesma configuração, mas com diretório `packages/api`
+
+#### Gatilhos de Implantação
+
+Para implantação seletiva (apenas quando uma aplicação específica é alterada):
+
+1. Configure webhooks no GitHub/GitLab para detectar alterações em diretórios específicos
+2. Use scripts personalizados para verificar quais aplicações foram alteradas e acionar apenas as builds necessárias
+
+```bash
+#!/bin/bash
+# Script para verificar alterações e acionar builds
+
+CHANGED_FILES=$(git diff --name-only HEAD HEAD~1)
+
+if echo "$CHANGED_FILES" | grep -q "^apps/app1/"; then
+  # Acionar build para app1
+  curl -X POST "$EASYPANEL_WEBHOOK_APP1"
+fi
+
+if echo "$CHANGED_FILES" | grep -q "^apps/app2/"; then
+  # Acionar build para app2
+  curl -X POST "$EASYPANEL_WEBHOOK_APP2"
+fi
+
+if echo "$CHANGED_FILES" | grep -q "^packages/api/"; then
+  # Acionar build para API
+  curl -X POST "$EASYPANEL_WEBHOOK_API"
+fi
+
+# Verificar alterações em pacotes compartilhados
+if echo "$CHANGED_FILES" | grep -q "^packages/shared-ui/"; then
+  # Acionar build para todas as aplicações que dependem de shared-ui
+  curl -X POST "$EASYPANEL_WEBHOOK_APP1"
+  curl -X POST "$EASYPANEL_WEBHOOK_APP2"
+fi
+```
 
 ## Considerações Finais
 
