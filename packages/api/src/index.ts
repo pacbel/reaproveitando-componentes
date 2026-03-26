@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { AuthService } from "@monorepo/auth-service";
-import { UserRepository } from "@monorepo/database";
 
 // Configuração do ambiente
 dotenv.config();
