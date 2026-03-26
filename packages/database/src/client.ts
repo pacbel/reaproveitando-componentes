@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/client';
 
 // Singleton para garantir apenas uma instância do PrismaClient
 let prismaInstance: PrismaClient | null = null;

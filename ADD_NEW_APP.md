@@ -32,12 +32,12 @@ Edite `apps/app4/package.json`:
   }
   ```
 
-- Defina porta única nos scripts (ex: `-p 3003`):
+- Defina porta única nos scripts (ex: `-p 3006`):
 
   ```json
   "scripts": {
-    "dev": "next dev -p 3003",
-    "start": "next start -p 3003",
+    "dev": "next dev -p 3006",
+    "start": "next start -p 3006",
     // ...
   }
   ```
@@ -122,16 +122,16 @@ CMD ["npm", "run", "start", "--workspace=apps/app4"]
 Adicione o novo serviço em `docker-compose.yml`:
 
 ```yaml
-  app4:
-    build:
-      context: .
-      dockerfile: apps/app4/Dockerfile
-    ports:
-      - "3003:3000"  # Porta externa:interna
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - api
+app4:
+  build:
+    context: .
+    dockerfile: apps/app4/Dockerfile
+  ports:
+    - "3003:3000" # Porta externa:interna
+  environment:
+    - NODE_ENV=production
+  depends_on:
+    - api
 ```
 
 ### 6. Instalar Dependências
