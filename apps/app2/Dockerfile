@@ -22,6 +22,9 @@ COPY . .
 # Generate Prisma Client
 RUN npm run generate --workspace=@monorepo/database
 
+# Ensure public folder exists
+RUN mkdir -p ./apps/app2/public
+
 # Build the app
 RUN npm run build --workspace=apps/app2
 
