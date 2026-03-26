@@ -13,6 +13,7 @@
     "dev:app2": "npm run dev --workspace=apps/app2",
     "dev:app3": "npm run dev --workspace=apps/app3",
     "dev:api": "npm run dev --workspace=packages/api",
+    "prebuild": "npm run generate --workspace=packages/database",
     "build": "npm run build --workspaces --if-present",
     "start": "next start -p 3002",
     "start:app1": "npm run start --workspace=apps/app1",

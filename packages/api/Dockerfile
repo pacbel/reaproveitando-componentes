@@ -19,6 +19,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Generate Prisma Client
+RUN npm run generate --workspace=@monorepo/database
+
 # Build the API
 RUN npm run build --workspace=packages/api
 
