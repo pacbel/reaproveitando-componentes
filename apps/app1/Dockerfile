@@ -36,7 +36,8 @@ WORKDIR /app
 
 # Copy built app from builder stage
 COPY --from=builder /app/apps/app1/.next ./.next
-COPY --from=builder /app/apps/app1/public ./public
+RUN mkdir -p ./public
+COPY --from=builder /app/apps/app1/public/. ./public/
 
 # Copy node_modules from builder
 COPY --from=builder /app/node_modules ./node_modules
