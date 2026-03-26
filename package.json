@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "next dev -p 3002",
+    "dev:all": "concurrently \"npm run dev:app1\" \"npm run dev:app2\" \"npm run dev:api\" \"npm run dev\"",
     "dev:app1": "npm run dev --workspace=apps/app1",
     "dev:app2": "npm run dev --workspace=apps/app2",
     "dev:api": "npm run dev --workspace=packages/api",
@@ -27,6 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
     "postcss": "^8.5.6",
