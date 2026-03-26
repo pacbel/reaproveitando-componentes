@@ -54,6 +54,6 @@ jobs:
           docker push pacbel2022/reaproveitando-componentes:app3-latest
           docker push pacbel2022/reaproveitando-componentes:api-latest
 
-    - name: Clean up
-      run: |
-        docker system prune -f
+      - name: Clean up
+        run: |
+          docker system prune -f
