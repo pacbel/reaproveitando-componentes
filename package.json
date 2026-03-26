@@ -8,14 +8,16 @@
   ],
   "scripts": {
     "dev": "next dev -p 3002",
-    "dev:all": "concurrently \"npm run dev:app1\" \"npm run dev:app2\" \"npm run dev:api\" \"npm run dev\"",
+    "dev:all": "concurrently \"npm run dev:app1\" \"npm run dev:app2\" \"npm run dev:app3\" \"npm run dev:api\" \"npm run dev\"",
     "dev:app1": "npm run dev --workspace=apps/app1",
     "dev:app2": "npm run dev --workspace=apps/app2",
+    "dev:app3": "npm run dev --workspace=apps/app3",
     "dev:api": "npm run dev --workspace=packages/api",
     "build": "npm run build --workspaces --if-present",
     "start": "next start -p 3002",
     "start:app1": "npm run start --workspace=apps/app1",
     "start:app2": "npm run start --workspace=apps/app2",
+    "start:app3": "npm run start --workspace=apps/app3",
     "start:api": "npm run start --workspace=packages/api",
     "lint": "npm run lint --workspaces --if-present",
     "setup:db": "npm run migrate:dev --workspace=packages/database",
@@ -25,8 +27,8 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.1",
     "eslint": "^9",
@@ -42,7 +44,7 @@
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
     "next": "15.4.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   }
 }

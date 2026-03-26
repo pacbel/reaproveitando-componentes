@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 export interface ButtonProps {
@@ -11,7 +13,7 @@ export interface ButtonProps {
   className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   children,
   onClick,
   type = 'button',
@@ -20,7 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   fullWidth = false,
   className = '',
-}) => {
+}: ButtonProps) => {
   // Usando estilos inline para garantir que as cores sejam aplicadas corretamente
   const baseStyle = {
     borderRadius: '6px',

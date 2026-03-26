@@ -12,7 +12,8 @@
       "@monorepo/auth-service": [
         "../../packages/auth-service/src"
       ]
-    }
+    },
+    "strictNullChecks": true
   },
   "include": [
     "**/*.ts",

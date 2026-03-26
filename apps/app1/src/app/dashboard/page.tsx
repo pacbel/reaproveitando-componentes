@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '@monorepo/shared-ui';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useAuth } from "@monorepo/shared-ui";
+import { useRouter } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -12,7 +14,7 @@ export default function Dashboard() {
   useEffect(() => {
     // Verificar autenticação
     if (!isAuthenticated && !loading) {
-      router.push('/login');
+      router.push("/login");
     } else {
       setLoading(false);
     }
@@ -20,7 +22,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     logout();
-    router.push('/login');
+    router.push("/login");
   };
 
   if (loading) {
@@ -45,13 +47,15 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4">Bem-vindo, {user?.name || 'Usuário'}!</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Bem-vindo, {user?.name || "Usuário"}!
+          </h2>
           <p className="mb-2">
             Esta é uma página protegida que só pode ser acessada após o login.
           </p>
           <p>
-            O componente de login utilizado é compartilhado entre diferentes aplicativos
-            através da estrutura de monorepo.
+            O componente de login utilizado é compartilhado entre diferentes
+            aplicativos através da estrutura de monorepo.
           </p>
         </div>
       </div>

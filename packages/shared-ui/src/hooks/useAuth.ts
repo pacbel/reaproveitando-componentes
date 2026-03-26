@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect } from "react";
 
 export interface User {
   id: string;
@@ -11,46 +13,55 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar se há token no localStorage
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      validateToken(token);
+    // Verificar se há token no localStorage (apenas no cliente)
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("auth_token");
+      if (token) {
+        validateToken(token);
+      } else {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
-      throw new Error('Credenciais inválidas');
+      throw new Error("Credenciais inválidas");
     }
 
     const data = await response.json();
-    
-    localStorage.setItem('auth_token', data.token);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", data.token);
+    }
     setUser(data.user);
-    
+
     return data.user;
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+    }
     setUser(null);
   };
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch('/api/auth/validate', {
+      const response = await fetch("/api/auth/validate", {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -58,10 +69,14 @@ export const useAuth = () => {
         const data = await response.json();
         setUser(data.user);
       } else {
-        localStorage.removeItem('auth_token');
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("auth_token");
+        }
       }
     } catch (error) {
-      localStorage.removeItem('auth_token');
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth_token");
+      }
     } finally {
       setLoading(false);
     }

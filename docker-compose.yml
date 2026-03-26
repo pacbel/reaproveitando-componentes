@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app1:
+    build:
+      context: .
+      dockerfile: apps/app1/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api
+
+  app2:
+    build:
+      context: .
+      dockerfile: apps/app2/Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api
+
+  app3:
+    build:
+      context: .
+      dockerfile: apps/app3/Dockerfile
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile
+    ports:
+      - "4000:3000"
+    environment:
+      - NODE_ENV=production
+    # Add database service if needed
+    # depends_on:
+    #   - database
+
+  # Uncomment and configure if using database
+  # database:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: mydb
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+
+# volumes:
+#   db_data:

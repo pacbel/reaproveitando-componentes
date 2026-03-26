@@ -442,6 +442,55 @@ if echo "$CHANGED_FILES" | grep -q "^packages/shared-ui/"; then
 fi
 ```
 
+## CI/CD com GitHub Actions
+
+Este projeto inclui uma configuração de GitHub Actions para automatizar o build e deploy das imagens Docker para o Docker Hub.
+
+### Configuração dos Secrets no GitHub
+
+Antes de usar o workflow, você precisa configurar os seguintes secrets no seu repositório GitHub:
+
+1. Acesse **Settings** > **Secrets and variables** > **Actions**
+2. Clique em **New repository secret**
+3. Adicione os seguintes secrets:
+
+- `DOCKERHUB_USERNAME`: Seu nome de usuário do Docker Hub (ex: `pacbel2022`)
+- `DOCKERHUB_TOKEN`: Seu token de acesso do Docker Hub
+
+### Como obter o Docker Hub Token
+
+1. Faça login no [Docker Hub](https://hub.docker.com/)
+2. Vá para **Account Settings** > **Security**
+3. Clique em **New Access Token**
+4. Dê um nome descritivo (ex: `github-actions`)
+5. Copie o token gerado e adicione como secret no GitHub
+
+### Workflow do GitHub Actions
+
+O arquivo `.github/workflows/deploy.yml` contém:
+
+- **Triggers**: Executa em push e pull requests para a branch `main`
+- **Build**: Instala dependências e constrói todos os workspaces
+- **Docker**: Constrói imagens usando Docker Compose e faz push para Docker Hub
+- **Tags**: As imagens são taggeadas como `latest` para cada serviço
+
+### Imagens Publicadas
+
+Após o deploy bem-sucedido, as seguintes imagens estarão disponíveis no Docker Hub:
+
+- `pacbel2022/reaproveitando-componentes:app1-latest`
+- `pacbel2022/reaproveitando-componentes:app2-latest`
+- `pacbel2022/reaproveitando-componentes:app3-latest`
+- `pacbel2022/reaproveitando-componentes:api-latest`
+
+### Deploy em Produção
+
+Para usar essas imagens em produção:
+
+1. No EasyPanel ou outra plataforma de hospedagem
+2. Configure cada serviço para usar a imagem correspondente do Docker Hub
+3. Configure as portas e variáveis de ambiente conforme necessário
+
 ## Considerações Finais
 
 Esta estrutura de monorepo é ideal para equipes que trabalham em múltiplos projetos relacionados e desejam maximizar a reutilização de código. É o equivalente moderno às DLLs do desenvolvimento Windows, adaptado para o ecossistema JavaScript/React.
